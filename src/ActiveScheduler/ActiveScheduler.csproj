@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(ProjectDir)..\..\build\package.props" />
+  <Import Project="$(ProjectDir)..\..\build\build.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Configurations>Debug;Release;Package</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ActiveLogging" Version="1.0.0" />
+    <PackageReference Include="ActiveRoutes" Version="1.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.2" />
+    <PackageReference Include="NCrontab" Version="3.3.1" />
+    <PackageReference Include="System.Reactive" Version="4.3.2" />
+    <PackageReference Include="TypeKitchen" Version="1.2.7" />
+    <PackageReference Include="TypeKitchen.Differencing" Version="1.2.7" />
+  </ItemGroup>
+
+</Project>
