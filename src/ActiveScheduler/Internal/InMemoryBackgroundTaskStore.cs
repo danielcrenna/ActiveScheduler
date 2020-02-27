@@ -13,14 +13,14 @@ namespace ActiveScheduler.Internal
 {
 	internal class InMemoryBackgroundTaskStore : IBackgroundTaskStore
 	{
+		private readonly Func<DateTimeOffset> _getTimestampFunc;
 		private static int _identity;
 
 		private readonly IDictionary<int, HashSet<BackgroundTask>> _tasks;
-		private readonly IServerTimestampService _timestamps;
 
-		public InMemoryBackgroundTaskStore(IServerTimestampService timestamps)
+		public InMemoryBackgroundTaskStore(Func<DateTimeOffset> getTimestampFunc)
 		{
-			_timestamps = timestamps;
+			_getTimestampFunc = getTimestampFunc;
 			_tasks = new ConcurrentDictionary<int, HashSet<BackgroundTask>>();
 		}
 
@@ -102,7 +102,7 @@ namespace ActiveScheduler.Internal
 
 		public DateTimeOffset GetTaskTimestamp()
 		{
-			return _timestamps.GetCurrentTime().ToUniversalTime();
+			return _getTimestampFunc().ToUniversalTime();
 		}
 
 		public Task<BackgroundTask> GetByIdAsync(int id)

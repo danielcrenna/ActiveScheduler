@@ -30,21 +30,14 @@ namespace ActiveScheduler
 
 			services.AddTypeResolver();
 			services.AddSafeLogging();
-			services.AddLocalTimestamps();
 
-			services.TryAddSingleton<IBackgroundTaskStore, InMemoryBackgroundTaskStore>();
+			services.TryAddSingleton<IBackgroundTaskStore>(r => new InMemoryBackgroundTaskStore(() => DateTimeOffset.Now));
 			services.TryAddSingleton<IBackgroundTaskSerializer, JsonBackgroundTaskSerializer>();
 			services.TryAddSingleton<BackgroundTaskHost>();
 
 			services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, BackgroundTaskService>());
 
 			return new BackgroundTaskBuilder(services);
-		}
-
-		internal static IServiceCollection AddLocalTimestamps(this IServiceCollection services)
-		{
-			services.TryAddSingleton<IServerTimestampService, LocalServerTimestampService>();
-			return services;
 		}
 	}
 }
