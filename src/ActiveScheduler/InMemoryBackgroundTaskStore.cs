@@ -9,17 +9,21 @@ using System.Threading.Tasks;
 using ActiveScheduler.Models;
 using TypeKitchen;
 
-namespace ActiveScheduler.Internal
+namespace ActiveScheduler
 {
-	internal class InMemoryBackgroundTaskStore : IBackgroundTaskStore
+	public class InMemoryBackgroundTaskStore : IBackgroundTaskStore
 	{
 		private readonly Func<DateTimeOffset> _getTimestampFunc;
 		private static int _identity;
 
 		private readonly IDictionary<int, HashSet<BackgroundTask>> _tasks;
 
+		public InMemoryBackgroundTaskStore() : this(null) { }
+
 		public InMemoryBackgroundTaskStore(Func<DateTimeOffset> getTimestampFunc)
 		{
+			if (getTimestampFunc == null)
+				getTimestampFunc = () => DateTimeOffset.Now;
 			_getTimestampFunc = getTimestampFunc;
 			_tasks = new ConcurrentDictionary<int, HashSet<BackgroundTask>>();
 		}
