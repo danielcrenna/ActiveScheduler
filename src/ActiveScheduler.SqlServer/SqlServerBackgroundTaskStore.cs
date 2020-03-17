@@ -19,6 +19,7 @@ using ActiveScheduler.SqlServer.Internal.SessionManagement;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using static TypeKitchen.EnumerableExtensions;
 
 namespace ActiveScheduler.SqlServer
 {
@@ -669,7 +670,7 @@ AND
 		{
 			var source = task.Tags ?? NoTags;
 
-			if (source == NoTags || source.Count == 0)
+			if (Equals(source, NoTags) || source.Count == 0)
 			{
 				db.Execute($"DELETE FROM {TagsTable} WHERE [BackgroundTaskId] = @Id", task, t);
 				return;

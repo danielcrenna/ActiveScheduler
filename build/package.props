@@ -11,8 +11,8 @@
     <RepositoryUrl>https://github.com/danielcrenna/ActiveScheduler</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>task scheduler queue delayed-job</PackageTags>
-    <Version>1.0.3</Version>
-    <PackageReleaseNotes>Update dependencies.</PackageReleaseNotes>
+    <Version>1.0.5</Version>
+    <PackageReleaseNotes>Minor fixes for SQL server migration.</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>
