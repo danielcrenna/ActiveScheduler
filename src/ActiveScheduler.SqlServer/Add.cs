@@ -19,15 +19,7 @@ namespace ActiveScheduler.SqlServer
 	public static class Add
 	{
 		public static BackgroundTaskBuilder AddSqlServerBackgroundTasksStore(this BackgroundTaskBuilder builder,
-			string connectionString, ConnectionScope scope = ConnectionScope.ByThread,
-			IConfiguration databaseConfig = null)
-		{
-			return builder.AddSqlServerBackgroundTasksStore(connectionString, scope, databaseConfig.FastBind);
-		}
-
-		public static BackgroundTaskBuilder AddSqlServerBackgroundTasksStore(this BackgroundTaskBuilder builder,
-			string connectionString, ConnectionScope scope = ConnectionScope.ByThread,
-			Action<SqlServerOptions> configureDatabase = null)
+			string connectionString, ConnectionScope scope = ConnectionScope.ByThread)
 		{
 			if (scope == ConnectionScope.ByRequest)
 				builder.Services.AddHttpContextAccessor();
@@ -35,12 +27,9 @@ namespace ActiveScheduler.SqlServer
 			builder.Services.AddSafeLogging();
 
 			var extensions = new[] {new HttpAccessorExtension()};
-			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString,
-				scope, extensions);
+			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString, scope, extensions);
 			builder.Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskStore, SqlServerBackgroundTaskStore>());
-
-			builder.Services.Configure(configureDatabase);
-
+			
 			var serviceProvider = builder.Services.BuildServiceProvider();
 			var options = serviceProvider.GetRequiredService<IOptions<BackgroundTaskOptions>>();
 			MigrateToLatest(connectionString, options.Value);

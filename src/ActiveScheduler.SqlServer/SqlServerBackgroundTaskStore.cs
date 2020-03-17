@@ -24,7 +24,7 @@ namespace ActiveScheduler.SqlServer
 {
 	public class SqlServerBackgroundTaskStore : IBackgroundTaskStore
 	{
-		private static readonly List<string> NoTags = new List<string>();
+		private static readonly IReadOnlyList<string> NoTags = new List<string>();
 
 		private readonly ISafeLogger<SqlServerBackgroundTaskStore> _logger;
 		private readonly IOptionsMonitor<BackgroundTaskOptions> _options;
@@ -34,7 +34,6 @@ namespace ActiveScheduler.SqlServer
 		private readonly Func<DateTimeOffset> _timestamps;
 
 		private WeakReference<IDataConnection> _lastDataConnection;
-
 		private WeakReference<IDbConnection> _lastDbConnection;
 
 		public SqlServerBackgroundTaskStore(IServiceProvider serviceProvider,

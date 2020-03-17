@@ -17,7 +17,8 @@ namespace ActiveScheduler.SqlServer.Migrations
 
 		public override void Down()
 		{
-			Delete.Column(nameof(BackgroundTask.CorrelationId)).FromTable(nameof(BackgroundTask));
+			Delete.Column(nameof(BackgroundTask.CorrelationId)).FromTable(nameof(BackgroundTask))
+				;
 		}
 	}
 }
