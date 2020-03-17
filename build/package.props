@@ -11,8 +11,8 @@
     <RepositoryUrl>https://github.com/danielcrenna/ActiveScheduler</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>task scheduler queue delayed-job</PackageTags>
-    <Version>1.0.2</Version>
-    <PackageReleaseNotes>Fix public visibility of storage type.</PackageReleaseNotes>
+    <Version>1.0.3</Version>
+    <PackageReleaseNotes>Update dependencies.</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

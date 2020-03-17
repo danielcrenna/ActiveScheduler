@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ActiveScheduler.SqlServer.Internal.DependencyInjection
 {
-	public class HttpAccessorExtension : IResolverExtension
+	internal class HttpAccessorExtension : IResolverExtension
 	{
 		public bool CanResolve(Lifetime lifetime)
 		{

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace ActiveScheduler.SqlServer.Internal.DependencyInjection
 {
-	public struct NameAndType
+	internal struct NameAndType
 	{
 		public readonly Type Type;
 		public readonly string Name;

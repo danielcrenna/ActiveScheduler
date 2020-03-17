@@ -140,7 +140,7 @@ namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 					throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
 			}
 
-			return new ContainerBuilder(services, container);
+			return new ContainerBuilder(services);
 		}
 	}
 }

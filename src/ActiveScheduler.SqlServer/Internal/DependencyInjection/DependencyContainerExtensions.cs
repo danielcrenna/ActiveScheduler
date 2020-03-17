@@ -3,7 +3,7 @@
 
 namespace ActiveScheduler.SqlServer.Internal.DependencyInjection
 {
-	public static class DependencyContainerExtensions
+	internal static class DependencyContainerExtensions
 	{
 		public static bool AddAspNetCore(this DependencyContainer container)
 		{

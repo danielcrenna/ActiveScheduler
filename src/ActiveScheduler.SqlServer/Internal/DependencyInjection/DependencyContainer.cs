@@ -13,7 +13,7 @@ using TypeKitchen.Creation;
 
 namespace ActiveScheduler.SqlServer.Internal.DependencyInjection
 {
-	public sealed class DependencyContainer : IContainer
+	internal sealed class DependencyContainer : IContainer
 	{
 		private readonly List<IResolverExtension> _extensions;
 		private readonly IEnumerable<Assembly> _fallbackAssemblies;
