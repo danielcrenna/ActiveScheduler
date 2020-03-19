@@ -5,17 +5,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <LangVersion>8.0</LangVersion>
     <Configurations>Debug;Release;Package</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ActiveConnection" Version="1.0.0" />
     <PackageReference Include="ActiveOptions" Version="1.0.4" />
-    <PackageReference Include="ActiveResolver" Version="1.0.2" />
     <PackageReference Include="Dapper" Version="2.0.30" />
-    <PackageReference Include="FluentMigrator.Runner" Version="3.2.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.2" />
   </ItemGroup>
 
   <ItemGroup>

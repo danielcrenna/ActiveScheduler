@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ActiveScheduler.SqlServer
+namespace ActiveScheduler.Sqlite.Internal
 {
 	internal static class CollectionExtensions
 	{

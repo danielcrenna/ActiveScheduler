@@ -3,13 +3,17 @@
 
 using System.Data;
 using System.Data.SqlClient;
-using ActiveScheduler.SqlServer.Internal.SessionManagement;
+using ActiveConnection;
 
 namespace ActiveScheduler.SqlServer
 {
-	public class SqlServerConnectionFactory : IConnectionFactory
+	internal sealed class SqlServerConnectionFactory : IDbConnectionFactory
 	{
 		public string ConnectionString { get; set; }
-		public IDbConnection CreateConnection() => new SqlConnection(ConnectionString);
+
+		public IDbConnection CreateConnection()
+		{
+			return new SqlConnection(ConnectionString);
+		}
 	}
 }

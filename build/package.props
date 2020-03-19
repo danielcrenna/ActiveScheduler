@@ -10,9 +10,9 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/danielcrenna/ActiveScheduler</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>task scheduler queue delayed-job</PackageTags>
-    <Version>1.0.5</Version>
-    <PackageReleaseNotes>Minor fixes for SQL server migration.</PackageReleaseNotes>
+    <PackageTags>task scheduler queue delayed-job hangfire</PackageTags>
+    <Version>1.0.6</Version>
+    <PackageReleaseNotes>Added SQLite.</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

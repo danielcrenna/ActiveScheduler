@@ -3,7 +3,6 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using ActiveScheduler.Models;
 using Microsoft.Extensions.Hosting;
 
 namespace ActiveScheduler.Internal

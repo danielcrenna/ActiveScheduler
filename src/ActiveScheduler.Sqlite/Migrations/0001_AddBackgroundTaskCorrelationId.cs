@@ -3,23 +3,22 @@
 
 using FluentMigrator;
 
-namespace ActiveScheduler.SqlServer.Migrations
+namespace ActiveScheduler.Sqlite.Migrations
 {
-	// ReSharper disable once UnusedMember.Global (executed during migrations)
 	[Migration(1)]
 	public class AddBackgroundTaskCorrelationId : Migration
 	{
 		public override void Up()
 		{
 			Alter.Table(nameof(BackgroundTask))
-				.AddColumn(nameof(BackgroundTask.CorrelationId)).AsGuid().NotNullable()
+				.AddColumn(nameof(BackgroundTask.CorrelationId)).AsGuid()
+				.Nullable() /* Can't add a non-default column in SQLite, even if no data exists */
 				;
 		}
 
 		public override void Down()
 		{
-			Delete.Column(nameof(BackgroundTask.CorrelationId)).FromTable(nameof(BackgroundTask))
-				;
+			Delete.Column(nameof(BackgroundTask.CorrelationId)).FromTable(nameof(BackgroundTask));
 		}
 	}
 }
