@@ -4,5 +4,7 @@
 namespace ActiveScheduler.Hooks
 {
 	// ReSharper disable once InconsistentNaming
-	public interface Hook { }
+	public interface Hook
+	{
+	}
 }

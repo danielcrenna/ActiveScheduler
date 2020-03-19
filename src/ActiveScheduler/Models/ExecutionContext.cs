@@ -13,7 +13,8 @@ namespace ActiveScheduler.Models
 		private readonly IKeyValueStore<string, object> _data;
 		private readonly IServiceScope _serviceScope;
 
-		internal ExecutionContext(IServiceScope serviceScope, IKeyValueStore<string, object> data, CancellationToken cancellationToken = default)
+		internal ExecutionContext(IServiceScope serviceScope, IKeyValueStore<string, object> data,
+			CancellationToken cancellationToken = default)
 		{
 			Continue = true;
 			Successful = true;

@@ -13,8 +13,8 @@ namespace ActiveScheduler
 {
 	public class InMemoryBackgroundTaskStore : IBackgroundTaskStore
 	{
-		private readonly Func<DateTimeOffset> _getTimestampFunc;
 		private static int _identity;
+		private readonly Func<DateTimeOffset> _getTimestampFunc;
 
 		private readonly IDictionary<int, HashSet<BackgroundTask>> _tasks;
 

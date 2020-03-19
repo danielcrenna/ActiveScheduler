@@ -18,12 +18,12 @@ namespace ActiveScheduler.Internal
 		{
 			return WithTaskFactory(scheduler).StartNew(action, cancellationToken);
 		}
-		
+
 		public static Task Run(this TaskScheduler scheduler, Func<Task> func, CancellationToken cancellationToken)
 		{
 			return WithTaskFactory(scheduler).StartNew(func, cancellationToken).Unwrap();
 		}
-		
+
 		public static TaskFactory WithTaskFactory(this TaskScheduler scheduler)
 		{
 			if (!TaskFactories.TryGetValue(scheduler, out var tf))

@@ -31,7 +31,8 @@ namespace ActiveScheduler
 			services.AddTypeResolver();
 			services.AddSafeLogging();
 
-			services.TryAddSingleton<IBackgroundTaskStore>(r => new InMemoryBackgroundTaskStore(() => DateTimeOffset.Now));
+			services.TryAddSingleton<IBackgroundTaskStore>(r =>
+				new InMemoryBackgroundTaskStore(() => DateTimeOffset.Now));
 			services.TryAddSingleton<IBackgroundTaskSerializer, JsonBackgroundTaskSerializer>();
 			services.TryAddSingleton<BackgroundTaskHost>();
 

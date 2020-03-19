@@ -19,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using TypeKitchen;
 using TypeKitchen.Creation;
-
 using ExecutionContext = ActiveScheduler.Models.ExecutionContext;
 
 namespace ActiveScheduler

@@ -3,7 +3,6 @@
 
 using System;
 using ActiveRoutes;
-using ActiveScheduler.Models;
 using Constants = ActiveScheduler.Internal.Constants;
 
 namespace ActiveScheduler.Configuration
