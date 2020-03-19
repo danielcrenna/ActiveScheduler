@@ -37,7 +37,8 @@ namespace ActiveScheduler.SqlServer
 		private WeakReference<IDataConnection> _lastDataConnection;
 		private WeakReference<IDbConnection> _lastDbConnection;
 
-		public SqlServerBackgroundTaskStore(IServiceProvider serviceProvider,
+		public SqlServerBackgroundTaskStore(
+			IServiceProvider serviceProvider,
 			Func<DateTimeOffset> timestamps,
 			IOptionsMonitor<BackgroundTaskOptions> options,
 			string schema = "dbo",

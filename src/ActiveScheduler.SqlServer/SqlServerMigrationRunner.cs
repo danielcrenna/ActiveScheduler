@@ -28,7 +28,9 @@ namespace ActiveScheduler.SqlServer
 			connection.Open();
 			connection.Close();
 		}
-		
+
+		public void MigrateUp<T>() => MigrateUp(typeof(T).Assembly, typeof(T).Namespace);
+
 		public void MigrateUp(Assembly assembly, string ns)
 		{
 			var container = new ServiceCollection()

@@ -3,32 +3,63 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using ActiveScheduler.SqlServer.Internal.DependencyInjection;
+using ActiveResolver;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 {
 	public static class Add
 	{
-		private static readonly ConcurrentDictionary<string, IContainer> Containers =
-			new ConcurrentDictionary<string, IContainer>();
-
-		public static ContainerBuilder AddDatabaseConnection<TScope, TConnectionFactory>(
-			this IServiceCollection services, string connectionString,
-			ConnectionScope scope = ConnectionScope.AlwaysNew,
-			IEnumerable<IResolverExtension> extensions = null,
-			Action<IDbConnection, IServiceProvider> onConnection = null,
-			Action<IDbCommand, Type, IServiceProvider> onCommand = null)
-			where TConnectionFactory : class, IConnectionFactory, new()
+		private static readonly ConcurrentDictionary<string, DependencyContainer> Containers = new ConcurrentDictionary<string, DependencyContainer>();
+		
+		public static IServiceCollection AddDatabaseConnection<TScope, TConnectionFactory>(this IServiceCollection services, string connectionString, ConnectionScope scope = ConnectionScope.AlwaysNew) where TConnectionFactory : class, IConnectionFactory, new()
 		{
 			var slot = $"{typeof(TScope).FullName}";
-			var builder = AddDatabaseConnection<TConnectionFactory>(services, connectionString, scope, slot, extensions,
-				onConnection, onCommand);
 
-			if (!TryGetContainer(slot, out var container))
+			var factory = new TConnectionFactory {ConnectionString = connectionString};
+			services.AddSingleton(factory);
+
+			var container = services.AddOrGetContainer(slot);
+			container.Register(slot, factory);
+
+			switch (scope)
+			{
+				case ConnectionScope.AlwaysNew:
+					container.Register(slot,
+						r => new DataContext(r.Resolve<TConnectionFactory>(slot)));
+					container.Register<IDataConnection>(slot,
+						r => new DataConnection(r.Resolve<DataContext>(slot)));
+					break;
+				case ConnectionScope.ByRequest:
+					container.Register(slot,
+						r => new DataContext(r.Resolve<TConnectionFactory>(slot)),
+						b => WrapLifecycle(container, b, Lifetime.Request));
+					container.Register<IDataConnection>(slot,
+						r => new DataConnection(r.Resolve<DataContext>(slot)),
+						b => WrapLifecycle(container, b, Lifetime.Request));
+					break;
+				case ConnectionScope.ByThread:
+					container.Register(slot,
+						r => new DataContext(r.Resolve<TConnectionFactory>(slot)),
+						b => WrapLifecycle(container, b, Lifetime.Thread));
+					container.Register<IDataConnection>(slot,
+						r => new DataConnection(r.Resolve<DataContext>(slot)),
+						b => WrapLifecycle(container, b, Lifetime.Thread));
+					break;
+				case ConnectionScope.KeepAlive:
+					container.Register(slot,
+						r => new DataContext(r.Resolve<TConnectionFactory>(slot)),
+						b => WrapLifecycle(container, b, Lifetime.Permanent));
+					container.Register<IDataConnection>(slot,
+						r => new DataConnection(r.Resolve<DataContext>(slot)), 
+						b => WrapLifecycle(container, b, Lifetime.Permanent));
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
+			}
+			
+			if(!TryGetContainer(slot, out container))
 				throw new ArgumentException($"Could not initialize container with slot {slot}", slot);
 
 			services.AddTransient(r => container.Resolve<IDataConnection<TScope>>());
@@ -37,110 +68,65 @@ namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 			{
 				case ConnectionScope.AlwaysNew:
 					container.Register<IDataConnection<TScope>>(r =>
-						new DataConnection<TScope>(r.Resolve<DataContext>(slot), r.MustResolve<IServiceProvider>(),
-							onCommand));
+						new DataConnection<TScope>(r.Resolve<DataContext>(slot)));
 					break;
 				case ConnectionScope.ByRequest:
 					container.Register<IDataConnection<TScope>>(
-						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot), r.MustResolve<IServiceProvider>(),
-							onCommand), Lifetime.Request);
+						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), b => WrapLifecycle(container, b, Lifetime.Request));
 					break;
 				case ConnectionScope.ByThread:
 					container.Register<IDataConnection<TScope>>(
-						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot), r.MustResolve<IServiceProvider>(),
-							onCommand), Lifetime.Thread);
+						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), b => WrapLifecycle(container, b, Lifetime.Thread));
 					break;
 				case ConnectionScope.KeepAlive:
 					container.Register<IDataConnection<TScope>>(
-						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot), r.MustResolve<IServiceProvider>(),
-							onCommand), Lifetime.Permanent);
+						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), b => WrapLifecycle(container, b, Lifetime.Permanent));
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
 			}
 
-			return builder;
+			return services;
 		}
 
-		private static IContainer AddOrGetContainer(this IServiceCollection services, string slot,
-			IEnumerable<IResolverExtension> extensions)
+		private static DependencyContainer AddOrGetContainer(this IServiceCollection services, string slot)
 		{
 			if (Containers.TryGetValue(slot, out var container))
 				return container;
 
 			var serviceProvider = services.BuildServiceProvider();
 			container = new DependencyContainer(serviceProvider);
-			container.Register(r => serviceProvider);
-			foreach (var extension in extensions ?? Enumerable.Empty<IResolverExtension>())
-				container.AddExtension(extension);
-
 			Containers.TryAdd(slot, container);
 
 			return container;
 		}
 
-		private static bool TryGetContainer(string slot, out IContainer container)
+		private static bool TryGetContainer(string slot, out DependencyContainer container)
 		{
 			return Containers.TryGetValue(slot, out container);
 		}
 
-		private static ContainerBuilder AddDatabaseConnection<TConnectionFactory>(this IServiceCollection services,
-			string connectionString,
-			ConnectionScope scope,
-			string slot,
-			IEnumerable<IResolverExtension> extensions = null,
-			Action<IDbConnection, IServiceProvider> onConnection = null,
-			Action<IDbCommand, Type, IServiceProvider> onCommand = null)
-			where TConnectionFactory : class, IConnectionFactory, new()
+		private static Func<DependencyContainer, T> WrapLifecycle<T>(DependencyContainer host, Func<DependencyContainer, T> builder, Lifetime lifetime)
+			where T : class
 		{
-			var factory = new TConnectionFactory {ConnectionString = connectionString};
-			services.AddSingleton(factory);
-
-			var container = services.AddOrGetContainer(slot, extensions);
-			container.Register(slot, r => factory, Lifetime.Permanent);
-
-			switch (scope)
+			var registration = lifetime switch
 			{
-				case ConnectionScope.AlwaysNew:
-					container.Register(slot,
-						r => new DataContext(r.Resolve<TConnectionFactory>(slot), r.Resolve<IServiceProvider>(),
-							onConnection));
-					container.Register<IDataConnection>(slot,
-						r => new DataConnection(r.Resolve<DataContext>(slot), r.Resolve<IServiceProvider>(),
-							onCommand));
-					break;
-				case ConnectionScope.ByRequest:
-					container.Register(slot,
-						r => new DataContext(r.Resolve<TConnectionFactory>(slot), r.Resolve<IServiceProvider>(),
-							onConnection),
-						Lifetime.Request);
-					container.Register<IDataConnection>(slot,
-						r => new DataConnection(r.Resolve<DataContext>(slot), r.Resolve<IServiceProvider>(), onCommand),
-						Lifetime.Request);
-					break;
-				case ConnectionScope.ByThread:
-					container.Register(slot,
-						r => new DataContext(r.Resolve<TConnectionFactory>(slot), r.Resolve<IServiceProvider>(),
-							onConnection),
-						Lifetime.Thread);
-					container.Register<IDataConnection>(slot,
-						r => new DataConnection(r.Resolve<DataContext>(slot), r.Resolve<IServiceProvider>(), onCommand),
-						Lifetime.Thread);
-					break;
-				case ConnectionScope.KeepAlive:
-					container.Register(slot,
-						r => new DataContext(r.Resolve<TConnectionFactory>(slot), r.Resolve<IServiceProvider>(),
-							onConnection),
-						Lifetime.Permanent);
-					container.Register<IDataConnection>(slot,
-						r => new DataConnection(r.Resolve<DataContext>(slot), r.Resolve<IServiceProvider>(), onCommand),
-						Lifetime.Permanent);
-					break;
-				default:
-					throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
-			}
+				Lifetime.AlwaysNew => builder,
+				Lifetime.Permanent => InstanceIsUnique.PerProcess(builder),
+				Lifetime.Thread => InstanceIsUnique.PerThread(host, builder),
+				Lifetime.Request => InstanceIsUnique.PerHttpRequest(builder),
+				_ => throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, "No extensions can serve this lifetime.")
+			};
 
-			return new ContainerBuilder(services);
+			return registration;
+		}
+
+		public enum Lifetime
+		{
+			AlwaysNew,
+			Permanent,
+			Thread,
+			Request
 		}
 	}
 }

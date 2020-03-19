@@ -11,17 +11,12 @@ namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 		private static readonly object Sync = new object();
 
 		private readonly IConnectionFactory _connectionFactory;
-		private readonly Action<IDbConnection, IServiceProvider> _onConnection;
-		private readonly IServiceProvider _serviceProvider;
 
 		private volatile IDbConnection _connection;
 
-		public DataContext(IConnectionFactory connectionFactory, IServiceProvider serviceProvider,
-			Action<IDbConnection, IServiceProvider> onConnection = null)
+		public DataContext(IConnectionFactory connectionFactory)
 		{
 			_connectionFactory = connectionFactory;
-			_serviceProvider = serviceProvider;
-			_onConnection = onConnection;
 		}
 
 		public IDbConnection Connection => GetConnection();
@@ -45,7 +40,6 @@ namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 			{
 				if (_connection != null) return;
 				var connection = _connectionFactory.CreateConnection();
-				_onConnection?.Invoke(connection, _serviceProvider);
 				connection.Open();
 				_connection = connection;
 			}

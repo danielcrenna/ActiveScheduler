@@ -4,7 +4,6 @@
 using ActiveLogging;
 using ActiveScheduler.Configuration;
 using ActiveScheduler.Models;
-using ActiveScheduler.SqlServer.Internal.DependencyInjection;
 using ActiveScheduler.SqlServer.Internal.SessionManagement;
 using ActiveScheduler.SqlServer.Migrations;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,16 +14,13 @@ namespace ActiveScheduler.SqlServer
 {
 	public static class Add
 	{
-		public static BackgroundTaskBuilder AddSqlServerBackgroundTasksStore(this BackgroundTaskBuilder builder,
-			string connectionString, ConnectionScope byRequest, ConnectionScope scope = ConnectionScope.ByThread)
+		public static BackgroundTaskBuilder AddSqlServerBackgroundTasksStore(this BackgroundTaskBuilder builder, string connectionString, ConnectionScope scope = ConnectionScope.ByThread)
 		{
 			if (scope == ConnectionScope.ByRequest)
 				builder.Services.AddHttpContextAccessor();
 
 			builder.Services.AddSafeLogging();
-
-			var extensions = new[] {new HttpAccessorExtension()};
-			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString, scope, extensions);
+			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString, scope);
 			builder.Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskStore, SqlServerBackgroundTaskStore>());
 			
 			var serviceProvider = builder.Services.BuildServiceProvider();
@@ -39,15 +35,10 @@ namespace ActiveScheduler.SqlServer
 			var runner = new SqlServerMigrationRunner(connectionString);
 
 			if (options.Store.CreateIfNotExists)
-			{
 				runner.CreateDatabaseIfNotExists();
-			}
 
 			if (options.Store.MigrateOnStartup)
-			{
-				runner.MigrateUp(typeof(CreateBackgroundTasksSchema).Assembly,
-					typeof(CreateBackgroundTasksSchema).Namespace);
-			}
+				runner.MigrateUp<CreateBackgroundTasksSchema>();
 		}
 	}
 }
