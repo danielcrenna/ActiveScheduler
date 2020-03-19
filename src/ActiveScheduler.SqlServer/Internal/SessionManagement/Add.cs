@@ -3,12 +3,19 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Data;
 using ActiveResolver;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 {
+	public enum ConnectionScope
+	{
+		AlwaysNew,
+		ByRequest,
+		ByThread,
+		KeepAlive
+	}
+
 	public static class Add
 	{
 		private static readonly ConcurrentDictionary<string, DependencyContainer> Containers = new ConcurrentDictionary<string, DependencyContainer>();
@@ -26,40 +33,26 @@ namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 			switch (scope)
 			{
 				case ConnectionScope.AlwaysNew:
-					container.Register(slot,
-						r => new DataContext(r.Resolve<TConnectionFactory>(slot)));
-					container.Register<IDataConnection>(slot,
-						r => new DataConnection(r.Resolve<DataContext>(slot)));
+					container.Register(slot, r => new DataContext(r.Resolve<TConnectionFactory>(slot)));
+					container.Register<IDataConnection>(slot, r => new DataConnection(r.Resolve<DataContext>(slot)));
 					break;
 				case ConnectionScope.ByRequest:
-					container.Register(slot,
-						r => new DataContext(r.Resolve<TConnectionFactory>(slot)),
-						b => WrapLifecycle(container, b, Lifetime.Request));
-					container.Register<IDataConnection>(slot,
-						r => new DataConnection(r.Resolve<DataContext>(slot)),
-						b => WrapLifecycle(container, b, Lifetime.Request));
+					container.Register(slot, r => new DataContext(r.Resolve<TConnectionFactory>(slot)), InstanceIsUnique.PerHttpRequest);
+					container.Register<IDataConnection>(slot, r => new DataConnection(r.Resolve<DataContext>(slot)), InstanceIsUnique.PerHttpRequest);
 					break;
 				case ConnectionScope.ByThread:
-					container.Register(slot,
-						r => new DataContext(r.Resolve<TConnectionFactory>(slot)),
-						b => WrapLifecycle(container, b, Lifetime.Thread));
-					container.Register<IDataConnection>(slot,
-						r => new DataConnection(r.Resolve<DataContext>(slot)),
-						b => WrapLifecycle(container, b, Lifetime.Thread));
+					container.Register(slot, r => new DataContext(r.Resolve<TConnectionFactory>(slot)), InstanceIsUnique.PerThread);
+					container.Register<IDataConnection>(slot, r => new DataConnection(r.Resolve<DataContext>(slot)), InstanceIsUnique.PerThread);
 					break;
 				case ConnectionScope.KeepAlive:
-					container.Register(slot,
-						r => new DataContext(r.Resolve<TConnectionFactory>(slot)),
-						b => WrapLifecycle(container, b, Lifetime.Permanent));
-					container.Register<IDataConnection>(slot,
-						r => new DataConnection(r.Resolve<DataContext>(slot)), 
-						b => WrapLifecycle(container, b, Lifetime.Permanent));
+					container.Register(slot, r => new DataContext(r.Resolve<TConnectionFactory>(slot)), InstanceIsUnique.PerProcess);
+					container.Register<IDataConnection>(slot, r => new DataConnection(r.Resolve<DataContext>(slot)), InstanceIsUnique.PerProcess);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
 			}
 			
-			if(!TryGetContainer(slot, out container))
+			if(!Containers.TryGetValue(slot, out container))
 				throw new ArgumentException($"Could not initialize container with slot {slot}", slot);
 
 			services.AddTransient(r => container.Resolve<IDataConnection<TScope>>());
@@ -67,20 +60,16 @@ namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 			switch (scope)
 			{
 				case ConnectionScope.AlwaysNew:
-					container.Register<IDataConnection<TScope>>(r =>
-						new DataConnection<TScope>(r.Resolve<DataContext>(slot)));
+					container.Register<IDataConnection<TScope>>(r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)));
 					break;
 				case ConnectionScope.ByRequest:
-					container.Register<IDataConnection<TScope>>(
-						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), b => WrapLifecycle(container, b, Lifetime.Request));
+					container.Register<IDataConnection<TScope>>(r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), InstanceIsUnique.PerHttpRequest);
 					break;
 				case ConnectionScope.ByThread:
-					container.Register<IDataConnection<TScope>>(
-						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), b => WrapLifecycle(container, b, Lifetime.Thread));
+					container.Register<IDataConnection<TScope>>(r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), InstanceIsUnique.PerThread);
 					break;
 				case ConnectionScope.KeepAlive:
-					container.Register<IDataConnection<TScope>>(
-						r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), b => WrapLifecycle(container, b, Lifetime.Permanent));
+					container.Register<IDataConnection<TScope>>(r => new DataConnection<TScope>(r.Resolve<DataContext>(slot)), InstanceIsUnique.PerProcess);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
@@ -99,34 +88,6 @@ namespace ActiveScheduler.SqlServer.Internal.SessionManagement
 			Containers.TryAdd(slot, container);
 
 			return container;
-		}
-
-		private static bool TryGetContainer(string slot, out DependencyContainer container)
-		{
-			return Containers.TryGetValue(slot, out container);
-		}
-
-		private static Func<DependencyContainer, T> WrapLifecycle<T>(DependencyContainer host, Func<DependencyContainer, T> builder, Lifetime lifetime)
-			where T : class
-		{
-			var registration = lifetime switch
-			{
-				Lifetime.AlwaysNew => builder,
-				Lifetime.Permanent => InstanceIsUnique.PerProcess(builder),
-				Lifetime.Thread => InstanceIsUnique.PerThread(host, builder),
-				Lifetime.Request => InstanceIsUnique.PerHttpRequest(builder),
-				_ => throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, "No extensions can serve this lifetime.")
-			};
-
-			return registration;
-		}
-
-		public enum Lifetime
-		{
-			AlwaysNew,
-			Permanent,
-			Thread,
-			Request
 		}
 	}
 }

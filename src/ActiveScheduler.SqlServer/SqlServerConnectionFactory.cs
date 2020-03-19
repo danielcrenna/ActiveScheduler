@@ -7,11 +7,9 @@ using ActiveScheduler.SqlServer.Internal.SessionManagement;
 
 namespace ActiveScheduler.SqlServer
 {
-	public class SqlServerConnectionFactory : ConnectionFactory
+	public class SqlServerConnectionFactory : IConnectionFactory
 	{
-		public override IDbConnection CreateConnection()
-		{
-			return new SqlConnection(ConnectionString);
-		}
+		public string ConnectionString { get; set; }
+		public IDbConnection CreateConnection() => new SqlConnection(ConnectionString);
 	}
 }

@@ -66,10 +66,12 @@ namespace ActiveScheduler.SqlServer
 		{
 			// IMPORTANT: DI is out of our hands, here.
 			var connection = GetDataConnection();
+
 			var current = connection.Current;
 
 			if (_lastDbConnection != null && _lastDbConnection.TryGetTarget(out var target) && target == current)
 				_logger.Debug(() => "IDbConnection is pre-initialized.");
+
 			_lastDbConnection = new WeakReference<IDbConnection>(current, false);
 
 			return current;
@@ -82,6 +84,7 @@ namespace ActiveScheduler.SqlServer
 
 			if (_lastDataConnection != null && _lastDataConnection.TryGetTarget(out var target) && target == connection)
 				_logger.Debug(() => "IDataConnection is pre-initialized.");
+
 			_lastDataConnection = new WeakReference<IDataConnection>(connection, false);
 
 			return connection;
@@ -381,12 +384,9 @@ ORDER BY
 		{
 			var now = GetTaskTimestamp();
 
-			string sql;
-			if (_options.CurrentValue.Store.FilterCorrelatedTasks)
-			{
-				// None locked, failed or succeeded, must be due, ordered by due time then priority,
-				// from a set correlated by continuous task (only the latest due task is included)
-				sql = $@"
+			// None locked, failed or succeeded, must be due, ordered by due time then priority,
+			// from a set correlated by continuous task (only the latest due task is included)
+			var filtered = $@"
 WITH Correlated AS
 (
     SELECT st.*, ROW_NUMBER() OVER(PARTITION BY st.[CorrelationId] ORDER BY st.[RunAt] DESC) AS [Row]
@@ -407,11 +407,9 @@ ORDER BY
     c.[RunAt], 
     c.[Priority] ASC
 ";
-			}
-			else
-			{
-				// None locked, failed or succeeded, must be due, ordered by due time then priority
-				sql = $@"
+
+			// None locked, failed or succeeded, must be due, ordered by due time then priority
+			var unfiltered = $@"
 SELECT TOP {readAhead} st.* FROM {TaskTable} st
 WHERE
     st.[LockedAt] IS NULL 
@@ -425,8 +423,8 @@ ORDER BY
     st.[RunAt], 
     st.[Priority] ASC
 ";
-			}
 
+			var sql = _options.CurrentValue.Store.FilterCorrelatedTasks ? filtered : unfiltered;
 			var matches = db.Query<BackgroundTask>(sql, new {Now = now}, t).AsList();
 			if (matches.Count == 0)
 			{
