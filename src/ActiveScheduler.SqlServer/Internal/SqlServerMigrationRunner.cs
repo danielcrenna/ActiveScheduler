@@ -22,9 +22,6 @@ namespace ActiveScheduler.SqlServer
 			connection.Close();
 		}
 
-		public override void ConfigureRunner(IMigrationRunnerBuilder builder)
-		{
-			builder.AddSqlServer();
-		}
+		public override void ConfigureRunner(IMigrationRunnerBuilder builder) => builder.AddSqlServer();
 	}
 }

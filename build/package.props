@@ -11,8 +11,8 @@
     <RepositoryUrl>https://github.com/danielcrenna/ActiveScheduler</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>task scheduler queue delayed-job hangfire</PackageTags>
-    <Version>1.0.7</Version>
-    <PackageReleaseNotes>Add [IgnoreDataMember] for legacy serializers.</PackageReleaseNotes>
+    <Version>1.1.0</Version>
+    <PackageReleaseNotes>Add scheduler API.</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>
