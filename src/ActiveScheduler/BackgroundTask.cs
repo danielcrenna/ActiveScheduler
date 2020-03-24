@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using ActiveScheduler.Internal;
 using ActiveScheduler.Models;
@@ -41,20 +42,12 @@ namespace ActiveScheduler
 
 		[NotMapped] public List<string> Tags { get; set; } = new List<string>();
 
-		[JsonIgnore] [Computed] public DateTimeOffset? NextOccurrence => GetNextOccurence();
-		[JsonIgnore] [Computed] public DateTimeOffset? LastOccurrence => GetLastOccurrence();
-		[JsonIgnore] [Computed] public IEnumerable<DateTimeOffset> AllOccurrences => GetAllOccurrences();
+		[JsonIgnore, IgnoreDataMember, Computed] public DateTimeOffset? NextOccurrence => GetNextOccurence();
+		[JsonIgnore, IgnoreDataMember, Computed] public DateTimeOffset? LastOccurrence => GetLastOccurrence();
+		[JsonIgnore, IgnoreDataMember, Computed] public IEnumerable<DateTimeOffset> AllOccurrences => GetAllOccurrences();
 
-		[JsonIgnore]
-		[Computed]
-		public bool HasValidExpression
-		{
-			get
-			{
-				var schedule = TryParseCron();
-				return schedule != null;
-			}
-		}
+		[JsonIgnore, IgnoreDataMember, Computed]
+		public bool HasValidExpression => TryParseCron() != null;
 
 		public string Data { get; set; }
 
