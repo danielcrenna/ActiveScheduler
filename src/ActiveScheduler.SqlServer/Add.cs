@@ -1,6 +1,7 @@
 // Copyright (c) Daniel Crenna & Contributors. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using ActiveConnection;
 using ActiveLogging;
 using ActiveScheduler.Configuration;
@@ -15,14 +16,14 @@ namespace ActiveScheduler.SqlServer
 	public static class Add
 	{
 		public static BackgroundTaskBuilder AddSqlServerBackgroundTasksStore(this BackgroundTaskBuilder builder,
-			string connectionString, ConnectionScope scope = ConnectionScope.ByThread)
+			string connectionString, Func<DateTimeOffset> timestamps, ConnectionScope scope = ConnectionScope.ByThread)
 		{
 			if (scope == ConnectionScope.ByRequest)
 				builder.Services.AddHttpContextAccessor();
 
 			builder.Services.AddSafeLogging();
-			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString,
-				scope);
+			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString, scope);
+			builder.Services.TryAddSingleton(timestamps);
 			builder.Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskStore, SqlServerBackgroundTaskStore>());
 
 			var serviceProvider = builder.Services.BuildServiceProvider();

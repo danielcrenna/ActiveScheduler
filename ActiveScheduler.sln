@@ -18,13 +18,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActiveScheduler.SqlServer",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActiveScheduler.Sqlite", "src\ActiveScheduler.Sqlite\ActiveScheduler.Sqlite.csproj", "{3B7FD727-196F-45C4-BE22-832BC55BF109}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActiveScheduler.Tests", "test\ActiveScheduler.Tests\ActiveScheduler.Tests.csproj", "{14485643-E879-4B13-B836-5C18C6498AA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActiveScheduler.Tests", "test\ActiveScheduler.Tests\ActiveScheduler.Tests.csproj", "{14485643-E879-4B13-B836-5C18C6498AA2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestKitchen", "..\TestKitchen\src\TestKitchen\TestKitchen.csproj", "{20C9F03F-0F28-4C5C-A97C-CF769110DC67}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestKitchen.TestAdapter", "..\TestKitchen\src\TestKitchen.TestAdapter\TestKitchen.TestAdapter.csproj", "{6EDCFB13-7876-4F74-9EEF-F025375CE810}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActiveScheduler.Api", "src\ActiveScheduler.Api\ActiveScheduler.Api.csproj", "{8271763F-5312-4585-A54A-27B1E598D5F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActiveScheduler.Api", "src\ActiveScheduler.Api\ActiveScheduler.Api.csproj", "{8271763F-5312-4585-A54A-27B1E598D5F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,18 +53,6 @@ Global
 		{14485643-E879-4B13-B836-5C18C6498AA2}.Package|Any CPU.Build.0 = Release|Any CPU
 		{14485643-E879-4B13-B836-5C18C6498AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14485643-E879-4B13-B836-5C18C6498AA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20C9F03F-0F28-4C5C-A97C-CF769110DC67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20C9F03F-0F28-4C5C-A97C-CF769110DC67}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20C9F03F-0F28-4C5C-A97C-CF769110DC67}.Package|Any CPU.ActiveCfg = Release|Any CPU
-		{20C9F03F-0F28-4C5C-A97C-CF769110DC67}.Package|Any CPU.Build.0 = Release|Any CPU
-		{20C9F03F-0F28-4C5C-A97C-CF769110DC67}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20C9F03F-0F28-4C5C-A97C-CF769110DC67}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6EDCFB13-7876-4F74-9EEF-F025375CE810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EDCFB13-7876-4F74-9EEF-F025375CE810}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EDCFB13-7876-4F74-9EEF-F025375CE810}.Package|Any CPU.ActiveCfg = Release|Any CPU
-		{6EDCFB13-7876-4F74-9EEF-F025375CE810}.Package|Any CPU.Build.0 = Release|Any CPU
-		{6EDCFB13-7876-4F74-9EEF-F025375CE810}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6EDCFB13-7876-4F74-9EEF-F025375CE810}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8271763F-5312-4585-A54A-27B1E598D5F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8271763F-5312-4585-A54A-27B1E598D5F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8271763F-5312-4585-A54A-27B1E598D5F4}.Package|Any CPU.ActiveCfg = Package|Any CPU
