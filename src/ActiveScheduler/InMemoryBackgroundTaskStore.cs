@@ -14,12 +14,13 @@ namespace ActiveScheduler
 	public class InMemoryBackgroundTaskStore : IBackgroundTaskStore
 	{
 		private static int _identity;
-		private readonly IServiceProvider _serviceProvider;
 		private readonly Func<IServiceProvider, DateTimeOffset> _getTimestampFunc;
+		private readonly IServiceProvider _serviceProvider;
 
 		private readonly IDictionary<int, HashSet<BackgroundTask>> _tasks;
-		
-		public InMemoryBackgroundTaskStore(IServiceProvider serviceProvider, Func<IServiceProvider, DateTimeOffset> getTimestampFunc)
+
+		public InMemoryBackgroundTaskStore(IServiceProvider serviceProvider,
+			Func<IServiceProvider, DateTimeOffset> getTimestampFunc)
 		{
 			if (getTimestampFunc == null)
 				getTimestampFunc = r => DateTimeOffset.Now;

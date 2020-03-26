@@ -11,18 +11,18 @@ namespace ActiveScheduler.Tests
 {
 	public class StaticCountingHandler : Handler
 	{
-		private readonly ILogger<StaticCountingHandler> _logger;
 		private readonly ILoggerFactory _factory;
-
-		public static int Count { get; set; }
-        
-		public static object Data { get; set; }
+		private readonly ILogger<StaticCountingHandler> _logger;
 
 		public StaticCountingHandler(ILogger<StaticCountingHandler> logger, ILoggerFactory factory)
 		{
 			_logger = logger;
 			_factory = factory;
 		}
+
+		public static int Count { get; set; }
+
+		public static object Data { get; set; }
 
 		public Task PerformAsync(ExecutionContext context)
 		{

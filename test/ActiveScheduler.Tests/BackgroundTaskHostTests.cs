@@ -64,12 +64,12 @@ namespace ActiveScheduler.Tests
 				await host.TryScheduleTaskAsync(typeof(TerminalTaskHandler));
 
 				var all = (await Store.GetAllAsync()).ToList();
-				Assert.Equal(1, all.Count/*, "Queue task should exist"*/);
+				Assert.Equal(1, all.Count /*, "Queue task should exist"*/);
 
 				await Task.Delay(TimeSpan.FromSeconds(3)); // <-- enough time to have started the terminal task
 
 				all = (await Store.GetAllAsync()).ToList();
-				Assert.Equal(1, all.Count/*, "Queue task should still exist, since it is terminal"*/);
+				Assert.Equal(1, all.Count /*, "Queue task should still exist, since it is terminal"*/);
 
 				var task = all.First();
 				Assert.True(task.LockedAt.HasValue, "Queue task should be locked");
@@ -77,7 +77,7 @@ namespace ActiveScheduler.Tests
 				Assert.True(task.IsRunningOvertime(Store), "Queue task should be running overtime");
 
 				var hanging = (await Store.GetHangingTasksAsync()).ToList();
-				Assert.Equal(1, hanging.Count/*, "Hanging task is not considered hanging by the task store"*/);
+				Assert.Equal(1, hanging.Count /*, "Hanging task is not considered hanging by the task store"*/);
 
 				var result = await host.CleanUpHangingTasksAsync();
 				Assert.True(result, "Hanging task operation did not return successfully.");
@@ -94,7 +94,8 @@ namespace ActiveScheduler.Tests
 				await Task.Run(async () =>
 				{
 					var original = Interlocked.Exchange(ref threadId, Thread.CurrentThread.ManagedThreadId);
-					Assert.Equal(threadId, original/*, "Unexpected DI resolution of the second async cleanup thread"*/);
+					Assert.Equal(threadId,
+						original /*, "Unexpected DI resolution of the second async cleanup thread"*/);
 					return result = await host.CleanUpHangingTasksAsync();
 				});
 			}
@@ -150,16 +151,17 @@ namespace ActiveScheduler.Tests
 				"handler should not have queued immediately since tasks are delayed");
 
 			Thread.Sleep(TimeSpan.FromSeconds(2)); // <-- enough time for the next occurrence
-			Assert.True(StaticCountingHandler.Count > 0, "handler should have executed since we scheduled it in the future");
-			Assert.NotNull(StaticCountingHandler.Data/*, "handler did not preserve data"*/);
-			Assert.Equal((string) StaticCountingHandler.Data, "123"/*, "handler misread data"*/);
+			Assert.True(StaticCountingHandler.Count > 0,
+				"handler should have executed since we scheduled it in the future");
+			Assert.NotNull(StaticCountingHandler.Data /*, "handler did not preserve data"*/);
+			Assert.Equal((string) StaticCountingHandler.Data, "123" /*, "handler misread data"*/);
 
 			StaticCountingHandler.Data = null;
 
 			Thread.Sleep(TimeSpan.FromSeconds(2)); // <-- enough time for the next occurrence
 			Assert.True(StaticCountingHandler.Count >= 2);
-			Assert.NotNull(StaticCountingHandler.Data/*, "handler did not preserve data"*/);
-			Assert.Equal(StaticCountingHandler.Data, "123"/*, "handler misread data"*/);
+			Assert.NotNull(StaticCountingHandler.Data /*, "handler did not preserve data"*/);
+			Assert.Equal(StaticCountingHandler.Data, "123" /*, "handler misread data"*/);
 		}
 
 		[Fact]

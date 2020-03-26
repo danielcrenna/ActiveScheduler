@@ -47,7 +47,7 @@ namespace ActiveScheduler.Tests
 			Assert.True(created, "Task not created");
 
 			var exists = await Store.GetByIdAsync(create.Id);
-			Assert.NotNull(exists/*, $"Created task with ID '{create.Id}' is not visible"*/);
+			Assert.NotNull(exists /*, $"Created task with ID '{create.Id}' is not visible"*/);
 
 			exists.Tags.Add("b");
 			await Store.SaveAsync(exists);
@@ -71,7 +71,7 @@ namespace ActiveScheduler.Tests
 			await Store.SaveAsync(create);
 
 			var created = await Store.GetByIdAsync(create.Id);
-			Assert.NotNull(created/*, $"Created task with ID '{create.Id}' is not visible"*/);
+			Assert.NotNull(created /*, $"Created task with ID '{create.Id}' is not visible"*/);
 
 			await Store.DeleteAsync(create);
 
@@ -107,11 +107,11 @@ namespace ActiveScheduler.Tests
 			await Store.SaveAsync(create);
 
 			var created = await Store.GetByIdAsync(create.Id);
-			Assert.NotNull(created/*, $"Created task with ID '{create.Id}' is not visible"*/);
+			Assert.NotNull(created /*, $"Created task with ID '{create.Id}' is not visible"*/);
 
 			// GetByAllTagsAsync (miss):
 			var all = (await Store.GetByAllTagsAsync("a", "b", "c", "d")).AsList();
-			Assert.Equal(0, all.Count/*, "Result returned that doesn't contain all tags"*/);
+			Assert.Equal(0, all.Count /*, "Result returned that doesn't contain all tags"*/);
 
 			// GetByAnyTagsAsync (hit):
 			all = (await Store.GetByAllTagsAsync("a", "b", "c")).AsList();
@@ -129,7 +129,7 @@ namespace ActiveScheduler.Tests
 			await Store.SaveAsync(create);
 
 			var created = await Store.GetByIdAsync(create.Id);
-			Assert.NotNull(created/*, $"Created task with ID '{create.Id}' is not visible"*/);
+			Assert.NotNull(created /*, $"Created task with ID '{create.Id}' is not visible"*/);
 
 			// GetByAllTagsAsync (miss):
 			var all = (await Store.GetByAnyTagsAsync("e")).AsList();
@@ -171,7 +171,7 @@ namespace ActiveScheduler.Tests
 			Assert.False(create.Id == 0);
 
 			var created = await Store.GetByIdAsync(create.Id);
-			Assert.NotNull(created/*, $"Created task with ID '{create.Id}' is not visible"*/);
+			Assert.NotNull(created /*, $"Created task with ID '{create.Id}' is not visible"*/);
 			Assert.Equal(create.Id, created.Id);
 		}
 
@@ -199,7 +199,7 @@ namespace ActiveScheduler.Tests
 			await Store.SaveAsync(create);
 
 			var created = await Store.GetByIdAsync(create.Id);
-			Assert.NotNull(created/*, $"Created task with ID '{create.Id}' is not visible"*/);
+			Assert.NotNull(created /*, $"Created task with ID '{create.Id}' is not visible"*/);
 
 			create.Tags.Remove("a");
 			await Store.SaveAsync(create);

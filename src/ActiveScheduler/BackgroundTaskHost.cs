@@ -18,7 +18,6 @@ using ActiveScheduler.Models;
 using ImpromptuInterface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using TypeKitchen;
 using TypeKitchen.Creation;
 using ExecutionContext = ActiveScheduler.Models.ExecutionContext;

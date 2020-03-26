@@ -42,11 +42,24 @@ namespace ActiveScheduler
 
 		[NotMapped] public List<string> Tags { get; set; } = new List<string>();
 
-		[JsonIgnore, IgnoreDataMember, Computed] public DateTimeOffset? NextOccurrence => GetNextOccurence();
-		[JsonIgnore, IgnoreDataMember, Computed] public DateTimeOffset? LastOccurrence => GetLastOccurrence();
-		[JsonIgnore, IgnoreDataMember, Computed] public IEnumerable<DateTimeOffset> AllOccurrences => GetAllOccurrences();
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Computed]
+		public DateTimeOffset? NextOccurrence => GetNextOccurence();
 
-		[JsonIgnore, IgnoreDataMember, Computed]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Computed]
+		public DateTimeOffset? LastOccurrence => GetLastOccurrence();
+
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Computed]
+		public IEnumerable<DateTimeOffset> AllOccurrences => GetAllOccurrences();
+
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Computed]
 		public bool HasValidExpression => TryParseCron() != null;
 
 		public string Data { get; set; }

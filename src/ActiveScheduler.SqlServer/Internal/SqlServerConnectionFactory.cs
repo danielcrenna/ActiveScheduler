@@ -10,6 +10,10 @@ namespace ActiveScheduler.SqlServer
 	internal sealed class SqlServerConnectionFactory : IDbConnectionFactory
 	{
 		public string ConnectionString { get; set; }
-		public IDbConnection CreateConnection() => new SqlConnection(ConnectionString);
+
+		public IDbConnection CreateConnection()
+		{
+			return new SqlConnection(ConnectionString);
+		}
 	}
 }

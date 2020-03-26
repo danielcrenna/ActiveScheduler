@@ -17,17 +17,20 @@ namespace ActiveScheduler.SqlServer
 	public static class Add
 	{
 		public static BackgroundTaskBuilder AddSqlServerBackgroundTasksStore(this BackgroundTaskBuilder builder,
-			string connectionString, Func<IServiceProvider, DateTimeOffset> timestamps, ConnectionScope scope = ConnectionScope.ByThread)
+			string connectionString, Func<IServiceProvider, DateTimeOffset> timestamps,
+			ConnectionScope scope = ConnectionScope.ByThread)
 		{
 			if (scope == ConnectionScope.ByRequest)
 				builder.Services.AddHttpContextAccessor();
 
 			builder.Services.AddSafeLogging();
-			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString, scope);
-			builder.Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskStore, SqlServerBackgroundTaskStore>(r => 
-				new SqlServerBackgroundTaskStore(r, () => timestamps(r),
-					r.GetRequiredService<IOptionsMonitor<BackgroundTaskOptions>>(),
-					logger: r.GetService<ISafeLogger<SqlServerBackgroundTaskStore>>())));
+			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString,
+				scope);
+			builder.Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskStore, SqlServerBackgroundTaskStore>(
+				r =>
+					new SqlServerBackgroundTaskStore(r, () => timestamps(r),
+						r.GetRequiredService<IOptionsMonitor<BackgroundTaskOptions>>(),
+						logger: r.GetService<ISafeLogger<SqlServerBackgroundTaskStore>>())));
 
 			var serviceProvider = builder.Services.BuildServiceProvider();
 			var options = serviceProvider.GetRequiredService<IOptions<BackgroundTaskOptions>>();
@@ -38,7 +41,7 @@ namespace ActiveScheduler.SqlServer
 
 		private static void MigrateToLatest(string connectionString, BackgroundTaskOptions options)
 		{
-			var runner = new SqlServerMigrationRunner<SqlServerConnectionOptions>(connectionString, 
+			var runner = new SqlServerMigrationRunner<SqlServerConnectionOptions>(connectionString,
 				new SqlServerConnectionOptions(options.Store));
 
 			runner.OnStartAsync<CreateBackgroundTasksSchema>().GetAwaiter().GetResult();
