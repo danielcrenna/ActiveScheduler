@@ -23,8 +23,7 @@ namespace ActiveScheduler.Sqlite
 				builder.Services.AddHttpContextAccessor();
 
 			builder.Services.AddSafeLogging();
-			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqliteConnectionFactory>(connectionString,
-				scope);
+			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqliteConnectionFactory>(connectionString, scope);
 			builder.Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskStore, SqliteBackgroundTaskStore>());
 
 			SqlMapper.AddTypeHandler(DateTimeOffsetHandler.Default);

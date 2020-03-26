@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ActiveConnection" Version="1.0.0" />
     <PackageReference Include="ActiveOptions" Version="1.0.4" />
     <PackageReference Include="ActiveResolver" Version="1.0.2" />
     <PackageReference Include="Dapper" Version="2.0.30" />
@@ -19,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ActiveConnection\src\ActiveConnection\ActiveConnection.csproj" />
     <ProjectReference Include="..\ActiveScheduler\ActiveScheduler.csproj" />
   </ItemGroup>
 

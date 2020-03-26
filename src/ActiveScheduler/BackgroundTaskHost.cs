@@ -15,8 +15,10 @@ using ActiveScheduler.Configuration;
 using ActiveScheduler.Hooks;
 using ActiveScheduler.Internal;
 using ActiveScheduler.Models;
+using ImpromptuInterface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using TypeKitchen;
 using TypeKitchen.Creation;
 using ExecutionContext = ActiveScheduler.Models.ExecutionContext;
@@ -198,7 +200,7 @@ namespace ActiveScheduler
 			{
 				try
 				{
-					var deserialized = JsonSerializer.Deserialize<Dictionary<string, object>>(data);
+					var deserialized = JsonSerializer.Deserialize<Dictionary<string, string>>(data);
 					foreach (var (k, v) in deserialized)
 					{
 						kv.AddOrUpdate(k, v);
@@ -206,7 +208,7 @@ namespace ActiveScheduler
 				}
 				catch (Exception e)
 				{
-					Trace.WriteLine(e);
+					Trace.TraceError(e.ToString());
 					throw;
 				}
 			}
@@ -569,12 +571,22 @@ namespace ActiveScheduler
 
 		private static T TryWrapHook<T>(object instance) where T : class
 		{
-			var prototype = typeof(T).GetMethods();
-			var example = instance.GetType().GetMethods();
-			var match = prototype.Any(l => example.Any(r => AreMethodsDuckEquivalent(l, r)))
-				? instance.QuackLike<T>()
-				: null;
-			return match;
+			// FIXME: Use TypeKitchen for much higher performance, once method calling is well-tested.
+
+			try
+			{
+				var prototype = typeof(T).GetMethods();
+				var example = instance.GetType().GetMethods();
+				var match = prototype.Any(l => example.Any(r => AreMethodsDuckEquivalent(l, r)))
+					? instance.ActLike<T>()
+					: null;
+				return match;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
 		}
 
 		private static bool AreMethodsDuckEquivalent(MethodInfo left, MethodInfo right)

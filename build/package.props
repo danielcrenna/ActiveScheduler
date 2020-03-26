@@ -11,8 +11,8 @@
     <RepositoryUrl>https://github.com/danielcrenna/ActiveScheduler</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>task scheduler queue delayed-job hangfire</PackageTags>
-    <Version>1.1.0</Version>
-    <PackageReleaseNotes>Add scheduler API.</PackageReleaseNotes>
+    <Version>1.1.1</Version>
+    <PackageReleaseNotes>Fix serialization and duck-typing regressions.</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

@@ -14,16 +14,16 @@ namespace ActiveScheduler
 	public class InMemoryBackgroundTaskStore : IBackgroundTaskStore
 	{
 		private static int _identity;
-		private readonly Func<DateTimeOffset> _getTimestampFunc;
+		private readonly IServiceProvider _serviceProvider;
+		private readonly Func<IServiceProvider, DateTimeOffset> _getTimestampFunc;
 
 		private readonly IDictionary<int, HashSet<BackgroundTask>> _tasks;
-
-		public InMemoryBackgroundTaskStore() : this(null) { }
-
-		public InMemoryBackgroundTaskStore(Func<DateTimeOffset> getTimestampFunc)
+		
+		public InMemoryBackgroundTaskStore(IServiceProvider serviceProvider, Func<IServiceProvider, DateTimeOffset> getTimestampFunc)
 		{
 			if (getTimestampFunc == null)
-				getTimestampFunc = () => DateTimeOffset.Now;
+				getTimestampFunc = r => DateTimeOffset.Now;
+			_serviceProvider = serviceProvider;
 			_getTimestampFunc = getTimestampFunc;
 			_tasks = new ConcurrentDictionary<int, HashSet<BackgroundTask>>();
 		}
@@ -106,7 +106,7 @@ namespace ActiveScheduler
 
 		public DateTimeOffset GetTaskTimestamp()
 		{
-			return _getTimestampFunc().ToUniversalTime();
+			return _getTimestampFunc(_serviceProvider).ToUniversalTime();
 		}
 
 		public Task<BackgroundTask> GetByIdAsync(int id)
