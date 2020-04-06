@@ -10,12 +10,12 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="ActiveLogging" Version="1.0.2" />
-    <PackageReference Include="ActiveRoutes" Version="1.0.9" />
+    <PackageReference Include="ActiveLogging" Version="1.0.3" />
+    <PackageReference Include="ActiveRoutes" Version="1.0.11" />
     <PackageReference Include="ImpromptuInterface" Version="7.0.1" />
     <PackageReference Include="NCrontab" Version="3.3.1" />
-    <PackageReference Include="System.Reactive" Version="4.3.2" />
-    <PackageReference Include="TypeKitchen.Differencing" Version="1.2.9" />
+    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="TypeKitchen.Differencing" Version="1.2.12" />
   </ItemGroup>
 
   <ItemGroup>

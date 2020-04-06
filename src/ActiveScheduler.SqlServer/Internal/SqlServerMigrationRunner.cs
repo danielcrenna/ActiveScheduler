@@ -8,15 +8,11 @@ using ActiveConnection;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.Options;
 
-namespace ActiveScheduler.SqlServer.Internal
+namespace ActiveScheduler.SqlServer
 {
-	internal sealed class SqlServerMigrationRunner<TOptions> : DbMigrationRunner<TOptions>
-		where TOptions : class, IDbConnectionOptions, new()
+	internal sealed class SqlServerMigrationRunner : DbMigrationRunner<SqlServerConnectionOptions>
 	{
-		public SqlServerMigrationRunner(string connectionString, IOptions<TOptions> options) : base(connectionString,
-			options)
-		{
-		}
+		public SqlServerMigrationRunner(string connectionString, IOptions<SqlServerConnectionOptions> options) : base(connectionString, options) { }
 
 		public override async Task CreateDatabaseIfNotExistsAsync()
 		{

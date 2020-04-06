@@ -5,7 +5,7 @@ using ActiveConnection;
 using ActiveScheduler.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace ActiveScheduler.SqlServer.Internal
+namespace ActiveScheduler.SqlServer
 {
 	public class SqlServerConnectionOptions : IDbConnectionOptions, IOptions<SqlServerConnectionOptions>
 	{

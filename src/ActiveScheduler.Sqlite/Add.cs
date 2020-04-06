@@ -39,18 +39,8 @@ namespace ActiveScheduler.Sqlite
 
 		private static void MigrateToLatest(string connectionString, BackgroundTaskOptions options)
 		{
-			var runner = new SqliteMigrationRunner(connectionString);
-
-			if (options.Store.CreateIfNotExists)
-			{
-				runner.CreateDatabaseIfNotExists();
-			}
-
-			if (options.Store.MigrateOnStartup)
-			{
-				runner.MigrateUp(typeof(CreateBackgroundTasksSchema).Assembly,
-					typeof(CreateBackgroundTasksSchema).Namespace);
-			}
+			var runner = new SqliteMigrationRunner(connectionString, new SqliteConnectionOptions(options.Store));
+			runner.OnStartAsync<CreateBackgroundTasksSchema>().GetAwaiter().GetResult();
 		}
 	}
 }

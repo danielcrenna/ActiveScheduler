@@ -6,7 +6,6 @@ using ActiveConnection;
 using ActiveLogging;
 using ActiveScheduler.Configuration;
 using ActiveScheduler.Models;
-using ActiveScheduler.SqlServer.Internal;
 using ActiveScheduler.SqlServer.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,8 +23,7 @@ namespace ActiveScheduler.SqlServer
 				builder.Services.AddHttpContextAccessor();
 
 			builder.Services.AddSafeLogging();
-			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString,
-				scope);
+			builder.Services.AddDatabaseConnection<BackgroundTaskBuilder, SqlServerConnectionFactory>(connectionString, scope);
 			builder.Services.Replace(ServiceDescriptor.Singleton<IBackgroundTaskStore, SqlServerBackgroundTaskStore>(
 				r =>
 					new SqlServerBackgroundTaskStore(r, () => timestamps(r),
@@ -41,9 +39,7 @@ namespace ActiveScheduler.SqlServer
 
 		private static void MigrateToLatest(string connectionString, BackgroundTaskOptions options)
 		{
-			var runner = new SqlServerMigrationRunner<SqlServerConnectionOptions>(connectionString,
-				new SqlServerConnectionOptions(options.Store));
-
+			var runner = new SqlServerMigrationRunner(connectionString, new SqlServerConnectionOptions(options.Store));
 			runner.OnStartAsync<CreateBackgroundTasksSchema>().GetAwaiter().GetResult();
 		}
 	}
